@@ -1,0 +1,20 @@
+[project]
+name = "email-reader"
+version = "0.1.0"
+description = "Utilities for parsing Gmail API messages into a friendly structure."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Ebube Imoh" }]
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["email_parser"]
