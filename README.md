@@ -26,7 +26,7 @@ uv sync --dev
 ```
 
 - Creates/updates `.venv/` with everything defined in `pyproject.toml`.
-- Installs testing tools (`pytest`) and Gmail client libraries (`google-api-python-client`, `google-auth`, `google-auth-oauthlib`).
+- Installs testing tools (`pytest`), Gmail client libraries (`google-api-python-client`, `google-auth`, `google-auth-oauthlib`), and `html2text` for HTML→plain-text conversion.
 
 If you run commands from outside the repo, prefix with `UV_CACHE_DIR=/path/to/cache` to reuse the local cache we’ve been using.
 
@@ -117,7 +117,7 @@ print(summary["from"])
 print(summary["body"][:200])
 ```
 
-The returned dict only contains `subject`, `from`, `to`, `cc`, and `body` (plain text preferred, HTML fallback).
+The returned dict only contains `subject`, `from`, `to`, `cc`, and `body`. `body` favors MIME `text/plain`, but when an email only includes HTML the project runs it through [`html2text`](https://github.com/Alir3z4/html2text) so you still get readable plain text without tags.
 
 ### 5.2 Reuse an existing Gmail client
 
@@ -170,7 +170,7 @@ uv run pytest
 Tests live in `tests/test_parser.py` and cover:
 - Parsing Gmail “full” and “raw” payloads.
 - Attachment handling.
-- Summarizer behavior (plain text preference, HTML fallback).
+- Summarizer behavior (plain text preference plus html2text-based fallback when only HTML is available).
 
 ---
 

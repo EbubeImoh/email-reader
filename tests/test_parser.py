@@ -113,7 +113,33 @@ class TestParser(unittest.TestCase):
             },
         }
         summary = summarize_message_json(msg)
-        self.assertIn("HTML only", summary["body"])
+        self.assertEqual(summary["body"], "HTML only")
+
+    def test_summarize_message_json_converts_html_to_plain_text(self):
+        html = b"<p>Hello <b>team</b><br>Line two</p><div>Thanks,<br>Support</div>"
+        msg = {
+            "id": "mid789",
+            "threadId": "tid101",
+            "payload": {
+                "headers": [
+                    {"name": "Subject", "value": "HTML Digest"},
+                    {"name": "From", "value": "Bot <bot@example.com>"},
+                    {"name": "To", "value": "you <you@example.com>"},
+                ],
+                "mimeType": "multipart/alternative",
+                "parts": [
+                    {"mimeType": "text/html", "body": {"data": b64url(html)}},
+                ],
+            },
+        }
+        summary = summarize_message_json(msg)
+        body = summary["body"]
+        self.assertIn("Hello team", body)
+        self.assertIn("Line two", body)
+        self.assertIn("Thanks,", body)
+        self.assertIn("Support", body)
+        self.assertIn("\n", body)
+        self.assertNotIn("<", body)
 
 if __name__ == "__main__":
     unittest.main()

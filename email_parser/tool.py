@@ -5,17 +5,32 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
+import html2text
+
 from . import parse_gmail_message
 from .types import ParsedEmail
 
 SCOPES: Sequence[str] = ("https://www.googleapis.com/auth/gmail.readonly",)
 
 
+def _html_to_text(html: str) -> str:
+    parser = html2text.HTML2Text()
+    parser.ignore_links = False  # keep link text + URLs for agents
+    parser.ignore_images = True
+    parser.ignore_emphasis = True
+    parser.body_width = 0  # avoid arbitrary wrapping
+    text = parser.handle(html or "")
+    lines = [line.rstrip() for line in text.splitlines()]
+    text = "\n".join(lines)
+    return text.strip()
+
+
 def _body_text(parsed: ParsedEmail) -> str:
-    """Prefer plain text, fall back to HTML."""
-    for candidate in (parsed.text, parsed.html):
-        if candidate and candidate.strip():
-            return candidate.strip()
+    """Prefer plain text, fall back to HTML converted to readable text."""
+    if parsed.text and parsed.text.strip():
+        return parsed.text.strip()
+    if parsed.html and parsed.html.strip():
+        return _html_to_text(parsed.html)
     return ""
 
 
