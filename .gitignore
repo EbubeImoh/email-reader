@@ -11,6 +11,8 @@ __pycache__/
 .venv/
 venv/
 env/
+token.json
+client_secret.json
 .env
 .envrc
 
